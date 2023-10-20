@@ -10,12 +10,14 @@ const semverDiff = require('semver-diff');
 const repositoryLocalWorkspace = process.env.GITHUB_WORKSPACE + '/';
 
 // helper functions
-function getProjectVersionFromMavenFile(fileContent) {
+function getProjectVersionFromMavenFile(fileContent, versionProperty) {
     var parser = new xml2js.Parser();
     var projectVersion;
 
     parser.parseString(fileContent, function (err, result) {
-        projectVersion = String(result.project.version);
+        projectVersion = versionProperty == null
+            ? String(result.project.version)
+            : String(result.project.properties['0'][versionProperty]);
     });
 
     return projectVersion;
@@ -25,9 +27,9 @@ function getProjectVersionFromPackageJsonFile(fileContent) {
     return JSON.parse(fileContent).version;
 }
 
-function getProjectVersion(fileContent, fileName) {
+function getProjectVersion(fileContent, fileName, versionProperty) {
     if (fileName === 'pom.xml') {
-        return getProjectVersionFromMavenFile(fileContent);
+        return getProjectVersionFromMavenFile(fileContent, versionProperty);
     }
 
     if (fileName === 'package.json') {
@@ -90,7 +92,9 @@ async function run() {
         // get updated project version
         var updatedBranchFileContent = fs.readFileSync(repositoryLocalWorkspace + fileToCheck);
         const fileName = path.basename(repositoryLocalWorkspace + fileToCheck);
-        var updatedProjectVersion = getProjectVersion(updatedBranchFileContent, fileName);
+        var versionProperty = core.getInput('pom-property-as-version');
+        if(versionProperty == '') versionProperty = null;
+        var updatedProjectVersion = getProjectVersion(updatedBranchFileContent, fileName, versionProperty);
 
         // check version update
         if (core.getInput('only-return-version') == 'false') {

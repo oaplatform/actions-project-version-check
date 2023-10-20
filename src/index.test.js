@@ -70,7 +70,14 @@ test('testGetProjectVersionWithMavenFile', async() =>
     expect(result2).toBe('1.0.0');
 });
 
-test('testGetProjectVersionWithPackageJsonFile', async() => 
+test('testGetProjectVersionWithMavenFileFromProperties', async() =>
+{
+    var fileContent = fs.readFileSync('.jest/pom-properties.xml');
+    var result2 = Index.getProjectVersion(fileContent, 'pom.xml', 'test.project.version');
+    expect(result2).toBe('1.2.3');
+});
+
+test('testGetProjectVersionWithPackageJsonFile', async() =>
 {
     var result = Index.getProjectVersion('{"version":"1.0.0"}', 'package.json');
     expect(result).toBe('1.0.0');
