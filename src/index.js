@@ -24,11 +24,7 @@ function getProjectVersionFromMavenFile(fileContent, versionProperty) {
 }
 
 function getProjectVersionFromGradlePropertiesFile(fileContent, versionProperty = 'version') {
-    if( fileContent === undefined ) {
-        return undefined;
-    }
-
-    const lines = fileContent.split(/\r?\n/);
+    const lines = new String(fileContent).split(/\r?\n/);
     for (const line of lines) {
         // Clean up surrounding whitespace
         const trimmed = line.trim();
@@ -135,7 +131,7 @@ async function run() {
             octokit.rest.repos.getContent({ owner: repositoryOwner, repo: repositoryName, path: fileToCheck, ref: targetBranch, headers: { 'Accept': 'application/vnd.github.v3.raw' } }).then(response => {
                 // get target project version
                 var targetBranchFileContent = response.data;
-                var targetProjectVersion = getProjectVersion(response.status == 200 ? targetBranchFileContent : undefined, fileName, versionProperty);
+                var targetProjectVersion = getProjectVersion(targetBranchFileContent, fileName, versionProperty);
 
                 checkVersionUpdate(targetProjectVersion, updatedProjectVersion, additionalFilesToCheck);
             }).catch(error => console.log('Cannot resolve `' + fileToCheck + '` in target branch! No version check required. ErrMsg => ' + error));
