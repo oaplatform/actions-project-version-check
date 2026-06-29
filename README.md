@@ -2,7 +2,7 @@
 
 This action checks if the project version has been updated in your pull request. The action will request the file content (file with name from environment variable `file-to-check`) from the pull request target branch and parse the project version. After that the local project version will be checked against the targets one with [semver-diff](https://www.npmjs.com/package/semver-diff). If the new version is not higher than the old one from target, the action fails.
 
-Currently supported are `pom.xml`, `package.json` and `version.txt`.
+Currently supported are `pom.xml`, `package.json`, `version.txt` and `gradle.properties`.
 
 ## Inputs
 

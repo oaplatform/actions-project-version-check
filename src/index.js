@@ -23,6 +23,32 @@ function getProjectVersionFromMavenFile(fileContent, versionProperty) {
     return projectVersion;
 }
 
+function getProjectVersionFromGradlePropertiesFile(fileContent, versionProperty = 'version') {
+    const lines = fileContent.split(/\r?\n/);
+    for (const line of lines) {
+        // Clean up surrounding whitespace
+        const trimmed = line.trim();
+
+        // Skip empty lines and lines starting with comments (# or !)
+        if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith('!')) {
+            continue;
+        }
+
+        // Split at the first assignment operator (= or :)
+        const match = trimmed.match(/^([^=: \t]+)\s*[=:]\s*(.*)$/);
+
+        if (match) {
+            const key = match[1].trim();
+
+            if( key === versionProperty ) {
+                return match[2].trim();
+            }
+        }
+    }
+
+    return undefined;
+}
+
 function getProjectVersionFromPackageJsonFile(fileContent) {
     return JSON.parse(fileContent).version;
 }
@@ -38,6 +64,10 @@ function getProjectVersion(fileContent, fileName, versionProperty) {
 
     if (fileName === 'version.txt') {
         return new String(fileContent).trim();
+    }
+
+    if( fileName === 'gradle.properties' ) {
+        return getProjectVersionFromGradlePropertiesFile(fileContent, versionProperty);
     }
 
     core.setFailed('"' + fileName + '" is not supported!');

@@ -170,3 +170,9 @@ it('testCheckVersionUpdateWithVersionIsUpdatedAndAdditionalFilesGivenWithSpaceIn
     expect(core.setFailed).not.toHaveBeenCalledWith('You have to update the project version in "README.md"!');
 });
 
+it('testCheckVersionUpdateWithVersionProperties', async() =>
+{
+    var result = Index.getProjectVersion('group=oap\n version=25.1.0 \norg.gradle.jvmargs=-Xmx2g', 'gradle.properties');
+    expect(result).toBe('25.1.0');
+});
+
