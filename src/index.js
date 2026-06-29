@@ -24,6 +24,10 @@ function getProjectVersionFromMavenFile(fileContent, versionProperty) {
 }
 
 function getProjectVersionFromGradlePropertiesFile(fileContent, versionProperty = 'version') {
+    if( fileContent === undefined ) {
+        return undefined;
+    }
+
     const lines = fileContent.split(/\r?\n/);
     for (const line of lines) {
         // Clean up surrounding whitespace
